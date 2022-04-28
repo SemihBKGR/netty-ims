@@ -1,4 +1,4 @@
-package com.semihbkgr.nettyims.msg;
+package com.semihbkgr.nettyims.message;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

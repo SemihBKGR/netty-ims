@@ -1,4 +1,4 @@
-package com.semihbkgr.nettyims.zk;
+package com.semihbkgr.nettyims.zookeeper;
 
 import org.apache.zookeeper.ZooKeeper;
 

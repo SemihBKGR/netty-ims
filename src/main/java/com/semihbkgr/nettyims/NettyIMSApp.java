@@ -1,8 +1,8 @@
 package com.semihbkgr.nettyims;
 
-import com.semihbkgr.nettyims.ws.HttpInitializer;
-import com.semihbkgr.nettyims.zk.ZKConnectionImpl;
-import com.semihbkgr.nettyims.zk.ZKManagerImpl;
+import com.semihbkgr.nettyims.websocket.HttpInitializer;
+import com.semihbkgr.nettyims.zookeeper.ZKConnectionImpl;
+import com.semihbkgr.nettyims.zookeeper.ZKManagerImpl;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;

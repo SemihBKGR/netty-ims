@@ -1,4 +1,4 @@
-package com.semihbkgr.nettyims.msg;
+package com.semihbkgr.nettyims.message;
 
 import lombok.Data;
 

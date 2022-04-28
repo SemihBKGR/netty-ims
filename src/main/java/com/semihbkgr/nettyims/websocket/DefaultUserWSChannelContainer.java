@@ -1,4 +1,4 @@
-package com.semihbkgr.nettyims.ws;
+package com.semihbkgr.nettyims.websocket;
 
 import io.netty.channel.Channel;
 import lombok.NonNull;

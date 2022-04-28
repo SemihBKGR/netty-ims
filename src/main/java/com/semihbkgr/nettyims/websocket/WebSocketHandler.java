@@ -1,8 +1,8 @@
-package com.semihbkgr.nettyims.ws;
+package com.semihbkgr.nettyims.websocket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.semihbkgr.nettyims.msg.DefaultMessageHandler;
-import com.semihbkgr.nettyims.msg.MessageHandler;
+import com.semihbkgr.nettyims.message.DefaultMessageHandler;
+import com.semihbkgr.nettyims.message.MessageHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;

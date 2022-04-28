@@ -1,17 +1,13 @@
-package com.semihbkgr.nettyims.ws;
+package com.semihbkgr.nettyims.websocket;
 
 import com.semihbkgr.nettyims.UsernameGenerator;
-import com.semihbkgr.nettyims.ws.WebSocketHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.jar.Attributes;
 
 @Slf4j
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
