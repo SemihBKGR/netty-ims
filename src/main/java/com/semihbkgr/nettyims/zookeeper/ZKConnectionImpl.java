@@ -30,17 +30,13 @@ public class ZKConnectionImpl implements ZKConnection {
 
     @Override
     public ZKConnection connect(int sessionTimeout) throws IOException {
-        synchronized (this) {
-            if (zk == null) {
-                synchronized (this) {
-                    zk = new ZooKeeper(connectionStringList.get(0), sessionTimeout, we -> {
+        if (zk == null) {
+            zk = new ZooKeeper(connectionStringList.get(0), sessionTimeout, we -> {
                         if (we.getState() == Watcher.Event.KeeperState.SyncConnected) {
                             connectionLatch.countDown();
                         }
                     });
                 }
-            }
-        }
         return this;
     }
 

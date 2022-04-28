@@ -15,8 +15,8 @@ public class ZKNodeDataManager implements NodeDataManager {
     public ZKNodeDataManager(String nodeId, ZKManager zkManager) throws InterruptedException, KeeperException {
         this.nodeId = nodeId;
         this.zkManager = zkManager;
-        if (!zkManager.exists("/" + NodeDataManager.USERS_PATH)) {
-            zkManager.create("/" + NodeDataManager.USERS_PATH, new byte[]{});
+        if (!zkManager.exists( NodeDataManager.USERS_PATH)) {
+            zkManager.create( NodeDataManager.USERS_PATH, new byte[]{});
         }
     }
 

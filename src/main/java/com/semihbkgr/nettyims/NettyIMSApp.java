@@ -1,5 +1,9 @@
 package com.semihbkgr.nettyims;
 
+import com.semihbkgr.nettyims.kafka.MessageReceiver;
+import com.semihbkgr.nettyims.kafka.MessageReceiverImpl;
+import com.semihbkgr.nettyims.message.DefaultMessageHandler;
+import com.semihbkgr.nettyims.message.MessageHandler;
 import com.semihbkgr.nettyims.websocket.HttpInitializer;
 import com.semihbkgr.nettyims.zookeeper.ZKConnectionImpl;
 import com.semihbkgr.nettyims.zookeeper.ZKManagerImpl;
@@ -14,15 +18,25 @@ import io.netty.handler.logging.LoggingHandler;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class NettyIMSApp {
 
-    public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
-        var zkConn = new ZKConnectionImpl("localhost:2181");
-        zkConn.connect(3000)
-                .sync();
+    public static final String NODE_ID= UUID.randomUUID().toString();
 
-        var zkManager = new ZKManagerImpl(zkConn);
+    public static final MessageHandler messageHandler;
+
+    static {
+        try {
+            messageHandler = new DefaultMessageHandler();
+        } catch (IOException | InterruptedException | KeeperException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
+
+        new MessageReceiverImpl(messageHandler).startReceiving(NODE_ID);
 
         // Configure the server.
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
