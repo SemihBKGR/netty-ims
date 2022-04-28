@@ -6,8 +6,10 @@ public interface ZKManager {
 
     void create(String path, byte[] data) throws KeeperException, InterruptedException;
 
-    Object getZNodeData(String path, boolean watchFlag) throws KeeperException, InterruptedException;
+    boolean exists(String path) throws KeeperException, InterruptedException;
 
-    void update(String path, byte[] data) throws KeeperException, InterruptedException;
+    Object get(String path) throws KeeperException, InterruptedException;
+
+    void delete(String path) throws KeeperException, InterruptedException;
 
 }
