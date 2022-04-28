@@ -7,9 +7,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultUserWSChannelContainer implements UserWSChannelContainer {
 
+    private static final UserWSChannelContainer instance = new DefaultUserWSChannelContainer();
+
+    public static UserWSChannelContainer getInstance() {
+        return instance;
+    }
+
     private final ConcurrentHashMap<String, Channel> usernameChannelMap;
 
-    public DefaultUserWSChannelContainer() {
+    private DefaultUserWSChannelContainer() {
         this.usernameChannelMap = new ConcurrentHashMap<>();
     }
 

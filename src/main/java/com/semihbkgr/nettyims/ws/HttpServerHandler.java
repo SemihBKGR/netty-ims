@@ -24,6 +24,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                     containsHeader(headers, HttpHeaderNames.UPGRADE, "websocket")) {
                 ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler(ctx,UsernameGenerator.randomUsername()));
                 handleHandshake(ctx, httpRequest);
+                ctx.fireChannelRegistered();
             }
         } else {
             log.info("Incoming request is unknown");
