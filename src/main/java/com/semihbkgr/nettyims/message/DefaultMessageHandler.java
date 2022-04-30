@@ -11,6 +11,7 @@ import com.semihbkgr.nettyims.kafka.MessageBroadcasterImpl;
 import com.semihbkgr.nettyims.websocket.DefaultUserWSChannelContainer;
 import com.semihbkgr.nettyims.zookeeper.ZKConnectionImpl;
 import com.semihbkgr.nettyims.zookeeper.ZKManagerImpl;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
@@ -34,13 +35,13 @@ public class DefaultMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void onUserConnected(String username) {
-
+    public void onUserConnected(String username) throws InterruptedException, KeeperException {
+        nodeDataManager.setSessionNodeId(username);
     }
 
     @Override
-    public void onUserDisconnected(String username) {
-
+    public void onUserDisconnected(String username) throws InterruptedException, KeeperException {
+        nodeDataManager.deleteSessionNodeId(username);
     }
 
     @Override
@@ -56,8 +57,10 @@ public class DefaultMessageHandler implements MessageHandler {
 
     @Override
     public void onReceived(String username, String rawMessage) {
-        var channel = DefaultUserWSChannelContainer.getInstance().getChannel(username);
-        channel.writeAndFlush(rawMessage);
+        log.info("sending");
+        DefaultUserWSChannelContainer.getInstance().getAllChannels().forEach(c -> {
+            c.writeAndFlush(new TextWebSocketFrame(String.format("from %s - message: %s", username, rawMessage)));
+        });
     }
 
 }

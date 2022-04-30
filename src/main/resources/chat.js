@@ -2,8 +2,6 @@ let socket = new WebSocket("ws://localhost:9000");
 
 socket.onopen = function(e) {
     alert("[open] Connection established");
-    alert("Sending to server");
-    socket.send("My name is John");
 };
 
 socket.onmessage = function(event) {
@@ -15,12 +13,23 @@ socket.onclose = function(event) {
     if (event.wasClean) {
         alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
     } else {
-        // e.g. server process killed or network down
-        // event.code is usually 1006 in this case
         alert('[close] Connection died');
     }
 };
 
-socket.onerror = function(error) {
+socket.onerror = function (error) {
     alert(`[error] ${error.message}`);
 };
+
+document.getElementById("message-send").onclick=function () {
+    let content = document.getElementById("message-content").textContent;
+    let message = {
+        id: 1,
+        content: content,
+        from: "username",
+        toList: ["user-1", "user-2"],
+        timestamp: 1000000000
+    };
+    socket.send(JSON.stringify(message))
+    alert(`message sent ${content}`)
+}

@@ -10,6 +10,8 @@ public interface UserWSChannelContainer {
 
     Channel getChannel(String username);
 
+    Iterable<Channel> getAllChannels();
+
     boolean existsChannel(String username);
 
 }

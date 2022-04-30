@@ -5,9 +5,9 @@ import org.apache.zookeeper.KeeperException;
 
 public interface MessageHandler {
 
-    void onUserConnected(String username);
+    void onUserConnected(String username) throws InterruptedException, KeeperException;
 
-    void onUserDisconnected(String username);
+    void onUserDisconnected(String username) throws InterruptedException, KeeperException;
 
     void onSend(String username,String rawMessage) throws JsonProcessingException, InterruptedException, KeeperException;
 

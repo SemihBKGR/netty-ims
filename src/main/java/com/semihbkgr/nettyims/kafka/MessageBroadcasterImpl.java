@@ -13,7 +13,7 @@ public class MessageBroadcasterImpl implements MessageBroadcaster {
 
     public MessageBroadcasterImpl() {
         Properties properties = new Properties ();
-        properties.setProperty("bootstrap.servers", "127.0.0.1:29092,127.0.0.1:29093,127.0.0.1:29094");
+        properties.setProperty("bootstrap.servers", "127.0.0.1:29092");
         properties.setProperty("batch.size", "16384");
         properties.setProperty ("linger.ms","1");
         properties.setProperty ("buffer.memory","33554432");

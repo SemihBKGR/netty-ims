@@ -36,6 +36,11 @@ public class DefaultUserWSChannelContainer implements UserWSChannelContainer {
     }
 
     @Override
+    public Iterable<Channel> getAllChannels() {
+        return usernameChannelMap.values();
+    }
+
+    @Override
     public boolean existsChannel(@NonNull String username) {
         return usernameChannelMap.contains(username);
     }

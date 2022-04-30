@@ -22,17 +22,20 @@ public class ZKNodeDataManager implements NodeDataManager {
 
     @Override
     public String getSessionNodeId(String username) throws InterruptedException, KeeperException {
-        return (String) zkManager.get("/" + NodeDataManager.USERS_PATH + "/" + username);
+        var ses= (String) zkManager.get(NodeDataManager.USERS_PATH + "/" + username);
+        log.info("getSession - node: {}, username: {}",ses, username);
+        return ses;
     }
 
     @Override
     public void setSessionNodeId(String username) throws InterruptedException, KeeperException {
-        zkManager.create("/" + NodeDataManager.USERS_PATH + "/" + username, username.getBytes(StandardCharsets.UTF_8));
+        zkManager.create(NodeDataManager.USERS_PATH + "/" + username, nodeId.getBytes(StandardCharsets.UTF_8));
+        log.info("setSession - nodeId: {}, username: {}", nodeId, username);
     }
 
     @Override
     public void deleteSessionNodeId(String username) throws InterruptedException, KeeperException {
-        zkManager.delete("/" + NodeDataManager.USERS_PATH + "/" + username);
+        zkManager.delete(NodeDataManager.USERS_PATH + "/" + username);
     }
 
 }

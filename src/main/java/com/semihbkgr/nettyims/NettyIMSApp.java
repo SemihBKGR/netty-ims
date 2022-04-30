@@ -1,12 +1,9 @@
 package com.semihbkgr.nettyims;
 
-import com.semihbkgr.nettyims.kafka.MessageReceiver;
 import com.semihbkgr.nettyims.kafka.MessageReceiverImpl;
 import com.semihbkgr.nettyims.message.DefaultMessageHandler;
 import com.semihbkgr.nettyims.message.MessageHandler;
 import com.semihbkgr.nettyims.websocket.HttpInitializer;
-import com.semihbkgr.nettyims.zookeeper.ZKConnectionImpl;
-import com.semihbkgr.nettyims.zookeeper.ZKManagerImpl;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
@@ -15,9 +12,14 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import org.apache.kafka.clients.admin.Admin;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Properties;
 import java.util.UUID;
 
 public class NettyIMSApp {
@@ -32,6 +34,13 @@ public class NettyIMSApp {
         } catch (IOException | InterruptedException | KeeperException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    static {
+        Properties properties = new Properties();
+        properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "127.0.0.1:29092");
+        Admin admin = Admin.create(properties);
+        admin.createTopics(Collections.singleton(new NewTopic(NODE_ID, 1, (short) 1)));
     }
 
     public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
