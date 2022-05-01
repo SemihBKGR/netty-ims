@@ -10,13 +10,12 @@ import com.semihbkgr.nettyims.kafka.MessageBroadcaster;
 import com.semihbkgr.nettyims.kafka.MessageBroadcasterImpl;
 import com.semihbkgr.nettyims.websocket.DefaultUserWSChannelContainer;
 import com.semihbkgr.nettyims.zookeeper.ZKConnectionImpl;
-import com.semihbkgr.nettyims.zookeeper.ZKManagerImpl;
+import com.semihbkgr.nettyims.zookeeper.ZKNodeManagerImpl;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 public class DefaultMessageHandler implements MessageHandler {
@@ -28,9 +27,9 @@ public class DefaultMessageHandler implements MessageHandler {
     public DefaultMessageHandler() throws IOException, InterruptedException, KeeperException {
         this.objectMapper = new ObjectMapper();
         this.messageBroadcaster = new MessageBroadcasterImpl();
-        var zkConn = new ZKConnectionImpl(List.of("127.0.0.1:2181", "127.0.0.1:2182", "127.0.0.1:2183"));
-        zkConn.connect(3000).sync();
-        var zkManager = new ZKManagerImpl(zkConn);
+        var zkConn = new ZKConnectionImpl("127.0.0.1:2181", "127.0.0.1:2182", "127.0.0.1:2183");
+        zkConn.connect().sync();
+        var zkManager = new ZKNodeManagerImpl(zkConn);
         this.nodeDataManager = new ZKNodeDataManager(NettyIMSApp.NODE_ID, zkManager);
     }
 

@@ -4,40 +4,36 @@ import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 
-public class ZKManagerImpl implements ZKManager {
+import java.nio.charset.StandardCharsets;
+
+public class ZKNodeManagerImpl implements ZKNodeManager {
 
     private final ZKConnection zkConn;
 
-    public ZKManagerImpl(ZKConnection zkConn) {
+    public ZKNodeManagerImpl(ZKConnection zkConn) {
         this.zkConn = zkConn;
     }
 
     @Override
-    public void create(String path, byte[] data) throws KeeperException, InterruptedException {
+    public void create(String path, String data) throws KeeperException, InterruptedException {
         zkConn.getZK()
                 .create(
                         path,
-                        data,
+                        data.getBytes(StandardCharsets.UTF_8),
                         ZooDefs.Ids.OPEN_ACL_UNSAFE,
                         CreateMode.PERSISTENT);
     }
 
     @Override
-    public boolean exists(String path) throws KeeperException, InterruptedException {
-        return zkConn.getZK()
-                .exists(path, false) != null;
-    }
-
-    @Override
-    public Object get(String path) throws KeeperException, InterruptedException {
-        byte[] b = zkConn.getZK()
+    public String get(String path) throws KeeperException, InterruptedException {
+        var bytes = zkConn.getZK()
                 .getData(path, null, null);
-        return new String(b);
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     @Override
     public void delete(String path) throws KeeperException, InterruptedException {
-        int version = zkConn.getZK()
+        var version = zkConn.getZK()
                 .exists(path, true)
                 .getVersion();
         zkConn.getZK()

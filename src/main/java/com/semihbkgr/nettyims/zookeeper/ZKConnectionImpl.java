@@ -4,8 +4,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.CountDownLatch;
 
 public class ZKConnectionImpl implements ZKConnection {
@@ -13,37 +12,43 @@ public class ZKConnectionImpl implements ZKConnection {
     private ZooKeeper zk;
     private final CountDownLatch connectionLatch;
 
-    private final List<String> connectionStringList;
+    private final String connectionString;
 
-    public ZKConnectionImpl(List<String> connectionStringList) throws IOException {
-        this.connectionStringList = connectionStringList;
-        connectionLatch = new CountDownLatch(1);
+    public ZKConnectionImpl(String nodeAddress) {
+        this.connectionString = nodeAddress;
+        this.connectionLatch = new CountDownLatch(1);
     }
 
-    public ZKConnectionImpl(String connectionString) throws IOException {
-        this(List.of(connectionString));
-    }
-
-    public ZKConnectionImpl(Map<String, ? extends List<Integer>> hostnamePortsMap) throws IOException {
-        this(ZKUtil.connectionStrings(hostnamePortsMap));
+    public ZKConnectionImpl(String nodeAddress, String... nodeAddresses) {
+        var nodeAddressJoiner = new StringJoiner(";", "", "");
+        nodeAddressJoiner.add(nodeAddress);
+        for (var nodeAddr : nodeAddresses) {
+            nodeAddressJoiner.add(nodeAddr);
+        }
+        this.connectionString = nodeAddressJoiner.toString();
+        this.connectionLatch = new CountDownLatch(1);
     }
 
     @Override
-    public ZKConnection connect(int sessionTimeout) throws IOException {
-        if (zk == null) {
-            zk = new ZooKeeper(connectionStringList.get(0), sessionTimeout, we -> {
+    public ZKConnection connect() throws IOException {
+        synchronized (this) {
+            if (zk == null) {
+                synchronized (this) {
+                    zk = new ZooKeeper(connectionString, ZKConnection.SESSION_TIMEOUT, we -> {
                         if (we.getState() == Watcher.Event.KeeperState.SyncConnected) {
                             connectionLatch.countDown();
                         }
                     });
                 }
+            }
+        }
         return this;
     }
 
     @Override
-    public ZooKeeper sync() throws InterruptedException {
+    public ZKConnection sync() throws InterruptedException {
         connectionLatch.await();
-        return zk;
+        return this;
     }
 
     @Override
@@ -53,12 +58,15 @@ public class ZKConnectionImpl implements ZKConnection {
 
     @Override
     public boolean isConnected() {
+        if (zk == null) {
+            return false;
+        }
         return zk.getState().isConnected();
     }
 
     @Override
-    public boolean isAlive() {
-        return zk.getState().isAlive();
+    public void disconnect() throws InterruptedException {
+        zk.close();
     }
 
 }

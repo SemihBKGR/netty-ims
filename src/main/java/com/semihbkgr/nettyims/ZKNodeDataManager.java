@@ -1,6 +1,6 @@
 package com.semihbkgr.nettyims;
 
-import com.semihbkgr.nettyims.zookeeper.ZKManager;
+import com.semihbkgr.nettyims.zookeeper.ZKNodeManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
@@ -10,13 +10,13 @@ import java.nio.charset.StandardCharsets;
 public class ZKNodeDataManager implements NodeDataManager {
 
     private final String nodeId;
-    private final ZKManager zkManager;
+    private final ZKNodeManager zkManager;
 
-    public ZKNodeDataManager(String nodeId, ZKManager zkManager) throws InterruptedException, KeeperException {
+    public ZKNodeDataManager(String nodeId, ZKNodeManager zkNodeManager) throws InterruptedException, KeeperException {
         this.nodeId = nodeId;
-        this.zkManager = zkManager;
-        if (!zkManager.exists( NodeDataManager.USERS_PATH)) {
-            zkManager.create( NodeDataManager.USERS_PATH, new byte[]{});
+        this.zkManager = zkNodeManager;
+        if (!zkNodeManager.exists( NodeDataManager.USERS_PATH)) {
+            zkNodeManager.create( NodeDataManager.USERS_PATH, new byte[]{});
         }
     }
 

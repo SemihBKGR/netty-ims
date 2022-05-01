@@ -6,14 +6,16 @@ import java.io.IOException;
 
 public interface ZKConnection {
 
-    ZKConnection connect(int sessionTimeout) throws IOException;
+    int SESSION_TIMEOUT=3000;
 
-    ZooKeeper sync() throws InterruptedException;
+    ZKConnection connect() throws IOException;
+
+    ZKConnection sync() throws InterruptedException;
 
     ZooKeeper getZK();
 
     boolean isConnected();
 
-    boolean isAlive();
+    void disconnect() throws InterruptedException;
 
 }
