@@ -1,8 +1,5 @@
 package com.semihbkgr.nettyims;
 
-import com.semihbkgr.nettyims.kafka.MessageReceiverImpl;
-import com.semihbkgr.nettyims.message.DefaultMessageHandler;
-import com.semihbkgr.nettyims.message.MessageHandler;
 import com.semihbkgr.nettyims.websocket.HttpInitializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -47,7 +44,7 @@ public class NettyIMSApp {
 
         new MessageReceiverImpl(messageHandler).startReceiving(NODE_ID);
 
-        // Configure the server.
+
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         try {
@@ -59,7 +56,6 @@ public class NettyIMSApp {
                     .childHandler(new HttpInitializer());
 
             Channel ch = b.bind(9000).sync().channel();
-
             ch.closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

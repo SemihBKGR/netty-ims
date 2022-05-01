@@ -20,14 +20,14 @@ public class WebSocketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         DefaultUserWSChannelContainer.getInstance().register(username, ctx.channel());
-        NettyIMSApp.messageHandler.onUserConnected(username);
+        NettyIMSApp.messageHandler.onUserConnect(username);
         log.info("registered");
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         DefaultUserWSChannelContainer.getInstance().unregister(username);
-        NettyIMSApp.messageHandler.onUserDisconnected(username);
+        NettyIMSApp.messageHandler.onUserDisconnect(username);
         log.info("unregistered");
     }
 
@@ -36,7 +36,7 @@ public class WebSocketHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof WebSocketFrame) {
             if (msg instanceof TextWebSocketFrame textWSFrame) {
                 log.info(textWSFrame.text());
-                NettyIMSApp.messageHandler.onSend(username, textWSFrame.text());
+                NettyIMSApp.messageHandler.onMessageSend(username, textWSFrame.text());
             }
         }
     }

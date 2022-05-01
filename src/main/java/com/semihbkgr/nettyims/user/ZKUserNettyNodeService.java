@@ -5,13 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
 @Slf4j
-public class DefaultUserNettyNodeService extends AbstractUserNettyNodeInstanceService implements UserNettyNodeSearchService {
+public class ZKUserNettyNodeService extends AbstractUserNettyNodeInstanceService implements UserNettyNodeSearchService {
 
     public static final String ZK_USERS_PATH = "/users";
 
     private final ZKNodeManagerImpl zkNodeManager;
 
-    public DefaultUserNettyNodeService(String nodeId, ZKNodeManagerImpl zkNodeManager) {
+    public ZKUserNettyNodeService(String nodeId, ZKNodeManagerImpl zkNodeManager) {
         super(nodeId);
         this.zkNodeManager = zkNodeManager;
     }

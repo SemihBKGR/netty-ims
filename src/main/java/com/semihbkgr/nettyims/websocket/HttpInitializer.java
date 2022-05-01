@@ -7,7 +7,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 
 public class HttpInitializer extends ChannelInitializer<SocketChannel> {
 
-    protected void initChannel(SocketChannel socketChannel) throws Exception {
+    protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast("httpServerCodec", new HttpServerCodec());
         pipeline.addLast("httpHandler", new HttpServerHandler());
