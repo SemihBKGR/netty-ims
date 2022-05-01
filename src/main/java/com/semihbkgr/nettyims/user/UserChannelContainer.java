@@ -6,6 +6,8 @@ public interface UserChannelContainer {
 
     boolean add(String username, Channel channel);
 
+    Channel get(String username);
+
     boolean remove(String username);
 
 }

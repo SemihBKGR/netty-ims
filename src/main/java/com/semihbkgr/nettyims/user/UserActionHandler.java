@@ -10,6 +10,4 @@ public interface UserActionHandler {
 
     void onMessageSend(String username, String messageStr);
 
-    void onMessageReceive(String username, String messageStr);
-
 }

@@ -1,12 +1,12 @@
 package com.semihbkgr.nettyims.user;
 
-import io.netty.channel.Channel;
+import lombok.NonNull;
 
 public abstract class AbstractUserNettyNodeInstanceService implements UserNettyNodeInstanceService {
 
     private final String nodeId;
 
-    protected AbstractUserNettyNodeInstanceService(String nodeId) {
+    protected AbstractUserNettyNodeInstanceService(@NonNull String nodeId) {
         this.nodeId = nodeId;
     }
 

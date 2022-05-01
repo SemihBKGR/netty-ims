@@ -1,9 +1,11 @@
 package com.semihbkgr.nettyims.message;
 
+import java.util.function.BiConsumer;
+
 public interface MessageHandler {
 
-    void onBroadcastMessage(String username, Message message);
+    void broadcastMessage(String receiver, Message message);
 
-    void onReceiveMessage(String username, Message message);
+    void addOnReceiveMessageListener(BiConsumer<? super String, ? super Message> listener);
 
 }

@@ -7,12 +7,11 @@ public interface NettyNodeIdGenerator {
 
     int MIN_ID_LENGTH = 5;
     int MAX_ID_LENGTH = 32;
-
     int DEFAULT_ID_LENGTH = 9;
 
     NettyNodeIdGenerator RANDOM_GENERATOR = new RandomNettyNodeIdGenerator(DEFAULT_ID_LENGTH);
 
-    String generate();
+    String id();
 
     class RandomNettyNodeIdGenerator implements NettyNodeIdGenerator {
 
@@ -25,7 +24,7 @@ public interface NettyNodeIdGenerator {
         }
 
         @Override
-        public String generate() {
+        public String id() {
             return IntStream.range(0, length)
                     .mapToObj(i -> (char) (42 + random.nextInt(10)))
                     .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)

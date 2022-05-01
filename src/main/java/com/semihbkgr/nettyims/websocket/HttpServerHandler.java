@@ -1,15 +1,26 @@
 package com.semihbkgr.nettyims.websocket;
 
+import com.semihbkgr.nettyims.user.UsernameGenerator;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import io.netty.util.AttributeKey;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
+@ChannelHandler.Sharable
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
+
+    public static final String USERNAME_CHANNEL_ATTR = "netty-ims-username";
+
+    private final UsernameGenerator usernameGenerator;
+    private final WebSocketHandler webSocketHandler;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
@@ -17,7 +28,8 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             HttpHeaders headers = httpRequest.headers();
             if (/*containsHeader(headers, HttpHeaderNames.CONNECTION, "upgrade") &&*/
                     containsHeader(headers, HttpHeaderNames.UPGRADE, "websocket")) {
-                ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler(ctx,UsernameGenerator.randomUsername()));
+                ctx.channel().attr(AttributeKey.newInstance(USERNAME_CHANNEL_ATTR)).set(usernameGenerator.username());
+                ctx.pipeline().replace(this, "websocketHandler", webSocketHandler);
                 handleHandshake(ctx, httpRequest);
                 ctx.fireChannelRegistered();
             }
