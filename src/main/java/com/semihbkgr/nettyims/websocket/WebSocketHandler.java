@@ -6,15 +6,23 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 @Slf4j
-@RequiredArgsConstructor
+@Singleton
 @ChannelHandler.Sharable
 public class WebSocketHandler extends ChannelInboundHandlerAdapter {
 
     private final UserActionHandler userActionHandler;
+
+    @Inject
+    public WebSocketHandler(@NonNull UserActionHandler userActionHandler) {
+        this.userActionHandler = userActionHandler;
+    }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {

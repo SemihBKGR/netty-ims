@@ -7,10 +7,13 @@ import com.semihbkgr.nettyims.kafka.KafkaProducerConnection;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
 @Slf4j
+@Singleton
 public class KafkaMessageHandler implements MessageHandler {
 
     private final ObjectMapper objectMapper;
@@ -19,8 +22,9 @@ public class KafkaMessageHandler implements MessageHandler {
 
     private final CopyOnWriteArrayList<BiConsumer<? super String, ? super Message>> onReceiveMessageListenerList;
 
-    public KafkaMessageHandler(KafkaConsumerConnection kafkaConsumerConnection,
-                               KafkaProducerConnection kafkaProducerConnection) {
+    @Inject
+    public KafkaMessageHandler(@NonNull KafkaConsumerConnection kafkaConsumerConnection,
+                               @NonNull KafkaProducerConnection kafkaProducerConnection) {
         this.kafkaConsumerConnection = kafkaConsumerConnection;
         this.kafkaProducerConnection = kafkaProducerConnection;
         this.objectMapper = new ObjectMapper();

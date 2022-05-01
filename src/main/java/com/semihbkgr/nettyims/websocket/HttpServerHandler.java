@@ -9,11 +9,14 @@ import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.util.AttributeKey;
-import lombok.RequiredArgsConstructor;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 @Slf4j
-@RequiredArgsConstructor
+@Singleton
 @ChannelHandler.Sharable
 public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
@@ -21,6 +24,12 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     private final UsernameGenerator usernameGenerator;
     private final WebSocketHandler webSocketHandler;
+
+    @Inject
+    public HttpServerHandler(@NonNull UsernameGenerator usernameGenerator, @NonNull WebSocketHandler webSocketHandler) {
+        this.usernameGenerator = usernameGenerator;
+        this.webSocketHandler = webSocketHandler;
+    }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {

@@ -5,14 +5,20 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.util.Properties;
 
+@Singleton
 public class KafkaProducerConnectionImpl implements KafkaProducerConnection {
 
     private final Producer<String, String> producer;
     private final String topic;
 
-    public KafkaProducerConnectionImpl(@NonNull String bootstrapServers, @NonNull String topic) {
+    @Inject
+    public KafkaProducerConnectionImpl(@NonNull @Named("kafkaProducerBootstrapServer") String bootstrapServers,
+                                       @NonNull @Named("kafkaProducerTopic") String topic) {
         var properties = new Properties();
         properties.setProperty("bootstrap.servers", bootstrapServers);
         properties.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");

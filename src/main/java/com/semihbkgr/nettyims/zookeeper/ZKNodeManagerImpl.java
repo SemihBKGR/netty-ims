@@ -1,16 +1,21 @@
 package com.semihbkgr.nettyims.zookeeper;
 
+import lombok.NonNull;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.nio.charset.StandardCharsets;
 
+@Singleton
 public class ZKNodeManagerImpl implements ZKNodeManager {
 
     private final ZKConnection zkConn;
 
-    public ZKNodeManagerImpl(ZKConnection zkConn) {
+    @Inject
+    public ZKNodeManagerImpl(@NonNull ZKConnection zkConn) {
         this.zkConn = zkConn;
     }
 

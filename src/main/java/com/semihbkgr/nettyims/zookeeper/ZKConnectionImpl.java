@@ -1,12 +1,16 @@
 package com.semihbkgr.nettyims.zookeeper;
 
+import lombok.NonNull;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import java.io.IOException;
-import java.util.StringJoiner;
 import java.util.concurrent.CountDownLatch;
 
+@Singleton
 public class ZKConnectionImpl implements ZKConnection {
 
     private ZooKeeper zk;
@@ -14,18 +18,9 @@ public class ZKConnectionImpl implements ZKConnection {
 
     private final String connectionString;
 
-    public ZKConnectionImpl(String nodeAddress) {
-        this.connectionString = nodeAddress;
-        this.connectionLatch = new CountDownLatch(1);
-    }
-
-    public ZKConnectionImpl(String nodeAddress, String... nodeAddresses) {
-        var nodeAddressJoiner = new StringJoiner(";", "", "");
-        nodeAddressJoiner.add(nodeAddress);
-        for (var nodeAddr : nodeAddresses) {
-            nodeAddressJoiner.add(nodeAddr);
-        }
-        this.connectionString = nodeAddressJoiner.toString();
+    @Inject
+    public ZKConnectionImpl(@NonNull @Named("zkConnectionString") String connectionString) {
+        this.connectionString = connectionString;
         this.connectionLatch = new CountDownLatch(1);
     }
 

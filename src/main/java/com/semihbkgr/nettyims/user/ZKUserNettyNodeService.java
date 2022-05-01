@@ -1,17 +1,23 @@
 package com.semihbkgr.nettyims.user;
 
 import com.semihbkgr.nettyims.zookeeper.ZKNodeManagerImpl;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.KeeperException;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 @Slf4j
+@Singleton
 public class ZKUserNettyNodeService extends AbstractUserNettyNodeInstanceService implements UserNettyNodeSearchService {
 
     public static final String ZK_USERS_PATH = "/users";
 
     private final ZKNodeManagerImpl zkNodeManager;
 
-    public ZKUserNettyNodeService(String nodeId, ZKNodeManagerImpl zkNodeManager) {
+    @Inject
+    public ZKUserNettyNodeService(@NonNull String nodeId, @NonNull ZKNodeManagerImpl zkNodeManager) {
         super(nodeId);
         this.zkNodeManager = zkNodeManager;
     }
