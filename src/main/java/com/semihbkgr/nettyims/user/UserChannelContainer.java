@@ -2,12 +2,16 @@ package com.semihbkgr.nettyims.user;
 
 import io.netty.channel.Channel;
 
+import java.util.Iterator;
+
 public interface UserChannelContainer {
 
-    boolean add(String username, Channel channel);
+    void add(String username, Channel channel);
 
     Channel get(String username);
 
-    boolean remove(String username);
+    Iterator<Channel> all();
+
+    void remove(String username);
 
 }

@@ -26,21 +26,21 @@ public class WebSocketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
-        var username = (String) ctx.channel().attr(AttributeKey.newInstance(HttpServerHandler.USERNAME_CHANNEL_ATTR)).get();
+        var username = (String) ctx.channel().attr(AttributeKey.valueOf(HttpServerHandler.USERNAME_CHANNEL_ATTR)).get();
         log.info("channelRegistered - username: {}", username);
         userActionHandler.onConnect(username, ctx.channel());
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) {
-        var username = (String) ctx.channel().attr(AttributeKey.newInstance(HttpServerHandler.USERNAME_CHANNEL_ATTR)).get();
+        var username = (String) ctx.channel().attr(AttributeKey.valueOf(HttpServerHandler.USERNAME_CHANNEL_ATTR)).get();
         log.info("channelUnregistered - username: {}", username);
         userActionHandler.onDisconnect(username);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        var username = (String) ctx.channel().attr(AttributeKey.newInstance(HttpServerHandler.USERNAME_CHANNEL_ATTR)).get();
+        var username = (String) ctx.channel().attr(AttributeKey.valueOf(HttpServerHandler.USERNAME_CHANNEL_ATTR)).get();
         if (msg instanceof TextWebSocketFrame textWSFrame) {
             log.info("channelRead - username: {}, message: {}", username, textWSFrame.text());
             userActionHandler.onMessageSend(username, textWSFrame.text());

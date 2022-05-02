@@ -1,6 +1,7 @@
 package com.semihbkgr.nettyims.kafka;
 
 import lombok.NonNull;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
@@ -17,26 +18,26 @@ public class KafkaConsumerConnectionImpl implements KafkaConsumerConnection {
 
     private final KafkaConsumer<String, String> consumer;
     private final Thread consumerThread;
-    private final LinkedBlockingQueue<KeyValuePair> valueQueue;
+    private final LinkedBlockingQueue<ConsumerRecord<String, String>> valueQueue;
 
     @Inject
-    public KafkaConsumerConnectionImpl(@NonNull @Named("kafkaConsumerBootstrapServer") String bootstrapServer,
-                                       @NonNull @Named("kafkaConsumerGroupId") String groupId,
-                                       @NonNull @Named("kafkaConsumerGroup") String topic) {
+    public KafkaConsumerConnectionImpl(@NonNull @Named("kafkaBootstrapServers") String bootstrapServers,
+                                       @NonNull @Named("kafkaConsumerTopicList") List<String> topicList,
+                                       @NonNull @Named("kafkaConsumerGroupId") String groupId) {
         var properties = new Properties();
-        properties.setProperty("bootstrap.servers", bootstrapServer);
+        properties.setProperty("bootstrap.servers", bootstrapServers);
         properties.setProperty("group.id", groupId);
         properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         this.consumer = new KafkaConsumer<>(properties);
         this.valueQueue = new LinkedBlockingQueue<>();
         this.consumerThread = new Thread(() -> {
-            consumer.subscribe(List.of(topic));
+            consumer.subscribe(topicList);
             while (!Thread.interrupted()) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
-                records.iterator().forEachRemaining(v -> {
+                ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100));
+                consumerRecords.forEach(cr -> {
                     try {
-                        valueQueue.put(KeyValuePair.to(v.key(), v.value()));
+                        valueQueue.put(cr);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -49,12 +50,12 @@ public class KafkaConsumerConnectionImpl implements KafkaConsumerConnection {
     }
 
     @Override
-    public KeyValuePair consume() {
-        return valueQueue.poll();
+    public ConsumerRecord<String, String> consume() throws InterruptedException {
+        return valueQueue.take();
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         consumerThread.interrupt();
         consumer.close();
     }

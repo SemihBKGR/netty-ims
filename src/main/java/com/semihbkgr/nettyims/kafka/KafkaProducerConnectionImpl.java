@@ -14,27 +14,19 @@ import java.util.Properties;
 public class KafkaProducerConnectionImpl implements KafkaProducerConnection {
 
     private final Producer<String, String> producer;
-    private final String topic;
 
     @Inject
-    public KafkaProducerConnectionImpl(@NonNull @Named("kafkaProducerBootstrapServer") String bootstrapServers,
-                                       @NonNull @Named("kafkaProducerTopic") String topic) {
+    public KafkaProducerConnectionImpl(@NonNull @Named("kafkaBootstrapServers") String bootstrapServers) {
         var properties = new Properties();
         properties.setProperty("bootstrap.servers", bootstrapServers);
         properties.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         properties.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         this.producer = new KafkaProducer<>(properties);
-        this.topic = topic;
     }
 
     @Override
-    public void produce(KeyValuePair keyValuePair) {
-        produce(keyValuePair.key, keyValuePair.value);
-    }
-
-    @Override
-    public void produce(@NonNull String key, @NonNull String value) {
-        producer.send(new ProducerRecord<>(topic, value));
+    public void produce(@NonNull String topic, @NonNull String key, @NonNull String value) {
+        producer.send(new ProducerRecord<>(topic, key, value));
     }
 
     @Override

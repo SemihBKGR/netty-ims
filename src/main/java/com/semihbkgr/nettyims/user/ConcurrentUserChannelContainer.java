@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Singleton
@@ -18,8 +19,8 @@ public class ConcurrentUserChannelContainer implements UserChannelContainer {
     }
 
     @Override
-    public boolean add(@NonNull String username, @NonNull Channel channel) {
-        return usernameChannelMap.put(username, channel) == null;
+    public void add(@NonNull String username, @NonNull Channel channel) {
+        usernameChannelMap.put(username, channel);
     }
 
     @Override
@@ -28,8 +29,13 @@ public class ConcurrentUserChannelContainer implements UserChannelContainer {
     }
 
     @Override
-    public boolean remove(@NonNull String username) {
-        return usernameChannelMap.remove(username) != null;
+    public Iterator<Channel> all() {
+        return usernameChannelMap.values().iterator();
+    }
+
+    @Override
+    public void remove(@NonNull String username) {
+        usernameChannelMap.remove(username);
     }
 
 }

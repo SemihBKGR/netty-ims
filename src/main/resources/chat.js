@@ -24,10 +24,10 @@ socket.onerror = function (error) {
 document.getElementById("message-send").onclick=function () {
     let content = document.getElementById("message-content").textContent;
     let message = {
-        id: 1,
+        id: "1",
         content: content,
         from: "username",
-        toList: ["user-1", "user-2"],
+        toList: [],
         timestamp: 1000000000
     };
     socket.send(JSON.stringify(message))
