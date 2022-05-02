@@ -1,6 +1,7 @@
 package com.semihbkgr.nettyims.kafka;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -10,6 +11,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Properties;
 
+@Slf4j
 @Singleton
 public class KafkaProducerConnectionImpl implements KafkaProducerConnection {
 
@@ -26,11 +28,12 @@ public class KafkaProducerConnectionImpl implements KafkaProducerConnection {
 
     @Override
     public void produce(@NonNull String topic, @NonNull String key, @NonNull String value) {
+        log.info("KafkaProducer - topic: '{}', key: '{}', value: '{}'", topic, key, value);
         producer.send(new ProducerRecord<>(topic, key, value));
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         producer.close();
     }
 

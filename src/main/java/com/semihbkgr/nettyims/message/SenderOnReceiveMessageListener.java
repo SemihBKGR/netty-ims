@@ -24,6 +24,7 @@ public class SenderOnReceiveMessageListener implements BiConsumer<List<String>, 
     @Override
     public void accept(@NonNull List<String> receiverUsernames, @NonNull Message message) {
         if (receiverUsernames.isEmpty()) {
+            log.info("message is sending all users, usersCount: {}, message: {}", userChannelContainer.size(), message);
             userChannelContainer.all()
                     .forEachRemaining(c -> c.writeAndFlush(message));
         } else {
@@ -32,6 +33,8 @@ public class SenderOnReceiveMessageListener implements BiConsumer<List<String>, 
                         var channel = userChannelContainer.get(username);
                         if (channel == null) {
                             log.warn("username: {} channel is null", username);
+                        } else {
+                            log.info("message is sending, username: {}, message: {}", username, message);
                         }
                         return channel;
                     })

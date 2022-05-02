@@ -1,6 +1,7 @@
 package com.semihbkgr.nettyims.kafka;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 
+@Slf4j
 @Singleton
 public class KafkaConsumerConnectionImpl implements KafkaConsumerConnection {
 
@@ -36,6 +38,7 @@ public class KafkaConsumerConnectionImpl implements KafkaConsumerConnection {
             while (!Thread.interrupted()) {
                 ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(100));
                 consumerRecords.forEach(cr -> {
+                    log.info("KafkaConsumer - topic: '{}', key: '{}', value: '{}'", cr.topic(), cr.key(), cr.value());
                     try {
                         valueQueue.put(cr);
                     } catch (InterruptedException e) {

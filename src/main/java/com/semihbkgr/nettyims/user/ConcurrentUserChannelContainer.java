@@ -34,6 +34,11 @@ public class ConcurrentUserChannelContainer implements UserChannelContainer {
     }
 
     @Override
+    public int size() {
+        return usernameChannelMap.size();
+    }
+
+    @Override
     public void remove(@NonNull String username) {
         usernameChannelMap.remove(username);
     }

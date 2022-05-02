@@ -12,6 +12,8 @@ public interface UserChannelContainer {
 
     Iterator<Channel> all();
 
+    int size();
+
     void remove(String username);
 
 }
