@@ -14,7 +14,7 @@ import com.semihbkgr.nettyims.kafka.KafkaProducerConnection;
 import com.semihbkgr.nettyims.kafka.KafkaProducerConnectionImpl;
 import com.semihbkgr.nettyims.message.KafkaMessageHandler;
 import com.semihbkgr.nettyims.message.MessageHandler;
-import com.semihbkgr.nettyims.message.WSFrameSenderOnReceiveMessageListener;
+import com.semihbkgr.nettyims.message.WebSocketFrameSenderOnReceiveMessageListener;
 import com.semihbkgr.nettyims.user.*;
 import com.semihbkgr.nettyims.zookeeper.ZKConnection;
 import com.semihbkgr.nettyims.zookeeper.ZKConnectionImpl;
@@ -54,7 +54,7 @@ public class NettyIMSApp {
         zkConnection.getZK().create("/" + serverNodeId, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 
         var messageHandler = injector.getInstance(MessageHandler.class);
-        var senderOnReceiverMessageListener = injector.getInstance(WSFrameSenderOnReceiveMessageListener.class);
+        var senderOnReceiverMessageListener = injector.getInstance(WebSocketFrameSenderOnReceiveMessageListener.class);
         messageHandler.addOnReceiveMessageListener(senderOnReceiverMessageListener);
 
         EventLoopGroup parentGroup = new NioEventLoopGroup(1);
@@ -220,7 +220,7 @@ public class NettyIMSApp {
             @Override
             protected void configure() {
                 bind(MessageHandler.class).to(KafkaMessageHandler.class).in(Singleton.class);
-                bind(WSFrameSenderOnReceiveMessageListener.class).in(Singleton.class);
+                bind(WebSocketFrameSenderOnReceiveMessageListener.class).in(Singleton.class);
             }
 
         }

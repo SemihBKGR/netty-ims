@@ -5,6 +5,7 @@ import lombok.NonNull;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,8 +30,8 @@ public class ConcurrentUserChannelContainer implements UserChannelContainer {
     }
 
     @Override
-    public Iterator<Channel> all() {
-        return usernameChannelMap.values().iterator();
+    public Collection<Channel> all() {
+        return usernameChannelMap.values();
     }
 
     @Override

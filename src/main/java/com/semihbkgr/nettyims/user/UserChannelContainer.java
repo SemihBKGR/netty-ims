@@ -2,6 +2,7 @@ package com.semihbkgr.nettyims.user;
 
 import io.netty.channel.Channel;
 
+import java.util.Collection;
 import java.util.Iterator;
 
 public interface UserChannelContainer {
@@ -10,7 +11,7 @@ public interface UserChannelContainer {
 
     Channel get(String username);
 
-    Iterator<Channel> all();
+    Collection<Channel> all();
 
     int size();
 
