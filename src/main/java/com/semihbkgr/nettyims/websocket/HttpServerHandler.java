@@ -37,7 +37,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
             HttpHeaders headers = httpRequest.headers();
             if (/*containsHeader(headers, HttpHeaderNames.CONNECTION, "upgrade") &&*/
                     containsHeader(headers, HttpHeaderNames.UPGRADE, "websocket")) {
-                ctx.channel().attr(AttributeKey.newInstance(USERNAME_CHANNEL_ATTR)).set(usernameGenerator.username());
+                ctx.channel().attr(AttributeKey.valueOf(USERNAME_CHANNEL_ATTR)).set(usernameGenerator.username());
                 ctx.pipeline().replace(this, "websocketHandler", webSocketHandler);
                 handleHandshake(ctx, httpRequest);
                 ctx.fireChannelRegistered();

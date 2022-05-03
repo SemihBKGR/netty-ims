@@ -11,7 +11,7 @@ import com.semihbkgr.nettyims.kafka.KafkaProducerConnection;
 import com.semihbkgr.nettyims.kafka.KafkaProducerConnectionImpl;
 import com.semihbkgr.nettyims.message.KafkaMessageHandler;
 import com.semihbkgr.nettyims.message.MessageHandler;
-import com.semihbkgr.nettyims.message.SenderOnReceiveMessageListener;
+import com.semihbkgr.nettyims.message.WSFrameSenderOnReceiveMessageListener;
 import com.semihbkgr.nettyims.user.*;
 import com.semihbkgr.nettyims.websocket.HttpInitializer;
 import com.semihbkgr.nettyims.websocket.HttpServerHandler;
@@ -54,7 +54,7 @@ public class NettyIMSApp {
         zkConnection.getZK().create("/" + serverNodeId, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 
         var messageHandler = injector.getInstance(MessageHandler.class);
-        var senderOnReceiverMessageListener = injector.getInstance(SenderOnReceiveMessageListener.class);
+        var senderOnReceiverMessageListener = injector.getInstance(WSFrameSenderOnReceiveMessageListener.class);
         messageHandler.addOnReceiveMessageListener(senderOnReceiverMessageListener);
 
         EventLoopGroup parentGroup = new NioEventLoopGroup(1);
@@ -120,12 +120,10 @@ public class NettyIMSApp {
 
         static final String ZK_CONNECTION_STRING_ENV_VAR = "NETTY_IMS_ZK_CONNECTION_STRING";
         static final String ZK_CONNECTION_STRING_SYSTEM_PROPERTY = "netty-ims.zk-connection-string";
-        static final String DEFAULT_ZK_CONNECTION_STRING = "127.0.0.1:2181,127.0.0.1:2182,127.0.0.1:2183";
 
 
         static final String KAFKA_BOOTSTRAP_SERVERS_ENV_VAR = "NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS";
         static final String KAFKA_BOOTSTRAP_SERVERS_SYSTEM_PROPERTY = "netty-ims.kafka-bootstrap-servers";
-        static final String DEFAULT_KAFKA_BOOTSTRAP_SERVERS = "127.0.0.1:29092";
 
         private EnvPropertyContracts() {
         }
@@ -133,8 +131,16 @@ public class NettyIMSApp {
         static void loadPropertiesFromEnv(@NonNull String serverNodeId) {
             System.getProperties().setProperty(SERVER_NODE_ID_SYSTEM_PROPERTY, serverNodeId);
             System.getProperties().setProperty(PORT_SYSTEM_PROPERTY, String.valueOf(getEnvOrDefault(PORT_ENV_VAR, DEFAULT_PORT)));
-            System.getProperties().setProperty(ZK_CONNECTION_STRING_SYSTEM_PROPERTY, getEnvOrDefault(ZK_CONNECTION_STRING_ENV_VAR, DEFAULT_ZK_CONNECTION_STRING));
-            System.getProperties().setProperty(KAFKA_BOOTSTRAP_SERVERS_SYSTEM_PROPERTY, getEnvOrDefault(KAFKA_BOOTSTRAP_SERVERS_ENV_VAR, DEFAULT_KAFKA_BOOTSTRAP_SERVERS));
+            System.getProperties().setProperty(ZK_CONNECTION_STRING_SYSTEM_PROPERTY, getEnv(ZK_CONNECTION_STRING_ENV_VAR));
+            System.getProperties().setProperty(KAFKA_BOOTSTRAP_SERVERS_SYSTEM_PROPERTY, getEnv(KAFKA_BOOTSTRAP_SERVERS_ENV_VAR));
+        }
+
+        static String getEnv(@NonNull String envVar) {
+            var value = System.getenv(envVar);
+            if (value != null) {
+                return value;
+            }
+            throw new IllegalStateException(String.format("env var '%s' is required", envVar));
         }
 
         static String getEnvOrDefault(@NonNull String envVar, @NonNull String defVal) {
@@ -146,13 +152,11 @@ public class NettyIMSApp {
         }
 
         static int getEnvOrDefault(@NonNull String envVar, int defVal) {
-            var value = System.getenv(envVar);
-            if (value != null) {
-                try {
-                    return Integer.parseInt(value);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
+            var value = getEnvOrDefault(envVar, String.valueOf(defVal));
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
             }
             return defVal;
         }
@@ -195,7 +199,7 @@ public class NettyIMSApp {
 
             @Override
             protected void configure() {
-                bind(UserActionHandler.class).to(DefaultUserActionHandler.class).in(Singleton.class);
+                bind(UserActionHandler.class).to(AsynchronousUserActionHandler.class).in(Singleton.class);
                 bind(UserChannelContainer.class).to(ConcurrentUserChannelContainer.class).in(Singleton.class);
                 bind(String.class).annotatedWith(Names.named(USERNAME_GENERATOR_BASE))
                                 .toInstance("user-"+System.getProperty(EnvPropertyContracts.SERVER_NODE_ID_SYSTEM_PROPERTY)+"-");
@@ -212,7 +216,7 @@ public class NettyIMSApp {
             @Override
             protected void configure() {
                 bind(MessageHandler.class).to(KafkaMessageHandler.class).in(Singleton.class);
-                bind(SenderOnReceiveMessageListener.class).in(Singleton.class);
+                bind(WSFrameSenderOnReceiveMessageListener.class).in(Singleton.class);
             }
 
         }

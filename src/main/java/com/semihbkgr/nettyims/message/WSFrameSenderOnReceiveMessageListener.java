@@ -1,7 +1,10 @@
 package com.semihbkgr.nettyims.message;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.semihbkgr.nettyims.user.UserChannelContainer;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
@@ -12,21 +15,27 @@ import java.util.function.BiConsumer;
 
 @Slf4j
 @Singleton
-public class SenderOnReceiveMessageListener implements BiConsumer<List<String>, Message> {
+public class WSFrameSenderOnReceiveMessageListener implements BiConsumer<List<String>, Message> {
 
     private final UserChannelContainer userChannelContainer;
+    private final ObjectMapper objectMapper;
 
     @Inject
-    public SenderOnReceiveMessageListener(@NonNull UserChannelContainer userChannelContainer) {
+    public WSFrameSenderOnReceiveMessageListener(@NonNull UserChannelContainer userChannelContainer,
+                                                 @NonNull ObjectMapper objectMapper) {
         this.userChannelContainer = userChannelContainer;
+        this.objectMapper = objectMapper;
     }
 
+    @SneakyThrows
     @Override
     public void accept(@NonNull List<String> receiverUsernames, @NonNull Message message) {
+        var serializedMessage = objectMapper.writeValueAsString(message);
+        var webSocketFrame = new TextWebSocketFrame(serializedMessage);
         if (receiverUsernames.isEmpty()) {
             log.info("message is sending all users, usersCount: {}, message: {}", userChannelContainer.size(), message);
             userChannelContainer.all()
-                    .forEachRemaining(c -> c.writeAndFlush(message));
+                    .forEachRemaining(c -> c.writeAndFlush(webSocketFrame));
         } else {
             receiverUsernames.parallelStream()
                     .map(username -> {
@@ -39,7 +48,7 @@ public class SenderOnReceiveMessageListener implements BiConsumer<List<String>, 
                         return channel;
                     })
                     .filter(Objects::nonNull)
-                    .forEach(c -> c.writeAndFlush(message));
+                    .forEach(c -> c.writeAndFlush(webSocketFrame));
         }
     }
 

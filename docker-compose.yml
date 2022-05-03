@@ -11,10 +11,11 @@ services:
       ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - netty-ims
 
   zookeeper2:
     image: zookeeper
-    restart: always
     hostname: zookeeper2
     ports:
       - "2182:2181"
@@ -23,10 +24,11 @@ services:
       ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - netty-ims
 
   zookeeper3:
     image: zookeeper
-    restart: always
     hostname: zookeeper3
     ports:
       - "2183:2181"
@@ -35,6 +37,8 @@ services:
       ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - netty-ims
 
   kafka1:
     image: confluentinc/cp-kafka:latest
@@ -47,42 +51,106 @@ services:
       - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+    networks:
+      - netty-ims
 
-#  kafka2:
-#    image: confluentinc/cp-kafka:latest
-#    hostname: kafka2
-#    depends_on:
-#      - zookeeper1
-#      - zookeeper2
-#      - zookeeper3
-#    ports:
-#      - "29093:29092"
-#    environment:
-#      KAFKA_BROKER_ID: 2
-#      KAFKA_ZOOKEEPER_CONNECT: zookeeper2:2181
-#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9092,PLAINTEXT_HOST://localhost:29092
-#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-#      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#
-#  kafka3:
-#    image: confluentinc/cp-kafka:latest
-#    hostname: kafka3
-#    depends_on:
-#      - zookeeper1
-#      - zookeeper2
-#      - zookeeper3
-#    ports:
-#      - "29094:29092"
-#    environment:
-#      KAFKA_BROKER_ID: 3
-#      KAFKA_ZOOKEEPER_CONNECT: zookeeper3:2181
-#      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9092,PLAINTEXT_HOST://localhost:29092
-#      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-#      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-#      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka2
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    ports:
+      - "29093:29093"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:29093,PLAINTEXT_HOST://localhost:9093
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+    networks:
+      - netty-ims
+
+  kafka3:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka3
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    ports:
+      - "29094:29094"
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:29094,PLAINTEXT_HOST://localhost:9094
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+    networks:
+      - netty-ims
+
+  netty-ims1:
+    image: netty-ims:1.0.0
+    build: .
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+      - kafka1
+      - kafka2
+      - kafka3
+    environment:
+      NETTY_IMS_PORT: 9000
+      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka1:29092,kafka2:29093,kafka3:29094
+    ports:
+      - "9000:9000"
+    networks:
+      - netty-ims
+
+  netty-ims-2:
+    image: netty-ims:1.0.0
+    build: .
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+      - kafka1
+      - kafka2
+      - kafka3
+    environment:
+      NETTY_IMS_PORT: 9000
+      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka1:29092,kafka2:29093,kafka3:29094
+    ports:
+      - "9001:9000"
+    networks:
+      - netty-ims
+
+  netty-ims-3:
+    image: netty-ims:1.0.0
+    build: .
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+      - kafka1
+      - kafka2
+      - kafka3
+    environment:
+      NETTY_IMS_PORT: 9000
+      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka1:29092,kafka2:29093,kafka3:29094
+    ports:
+      - "9002:9000"
+    networks:
+      - netty-ims
+
+networks:
+  netty-ims:
+    driver: bridge
