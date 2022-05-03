@@ -1,4 +1,4 @@
-package com.semihbkgr.nettyims.websocket;
+package com.semihbkgr.nettyims.http;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

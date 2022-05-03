@@ -1,4 +1,4 @@
-let socket = new WebSocket("ws://localhost:9000");
+let socket = new WebSocket("ws://172.29.0.12:9000/chat");
 
 socket.onopen = function(e) {
     alert("[open] Connection established");

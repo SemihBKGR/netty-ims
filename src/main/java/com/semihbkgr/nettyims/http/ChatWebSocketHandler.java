@@ -1,4 +1,4 @@
-package com.semihbkgr.nettyims.websocket;
+package com.semihbkgr.nettyims.http;
 
 import com.semihbkgr.nettyims.user.UserActionHandler;
 import io.netty.channel.ChannelHandler;
@@ -15,12 +15,12 @@ import javax.inject.Singleton;
 @Slf4j
 @Singleton
 @ChannelHandler.Sharable
-public class WebSocketHandler extends ChannelInboundHandlerAdapter {
+public class ChatWebSocketHandler extends ChannelInboundHandlerAdapter {
 
     private final UserActionHandler userActionHandler;
 
     @Inject
-    public WebSocketHandler(@NonNull UserActionHandler userActionHandler) {
+    public ChatWebSocketHandler(@NonNull UserActionHandler userActionHandler) {
         this.userActionHandler = userActionHandler;
     }
 

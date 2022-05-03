@@ -5,6 +5,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
+import com.semihbkgr.nettyims.http.ChatWebSocketHandler;
+import com.semihbkgr.nettyims.http.HttpInitializer;
+import com.semihbkgr.nettyims.http.HttpServerHandler;
 import com.semihbkgr.nettyims.kafka.KafkaConsumerConnection;
 import com.semihbkgr.nettyims.kafka.KafkaConsumerConnectionImpl;
 import com.semihbkgr.nettyims.kafka.KafkaProducerConnection;
@@ -13,9 +16,6 @@ import com.semihbkgr.nettyims.message.KafkaMessageHandler;
 import com.semihbkgr.nettyims.message.MessageHandler;
 import com.semihbkgr.nettyims.message.WSFrameSenderOnReceiveMessageListener;
 import com.semihbkgr.nettyims.user.*;
-import com.semihbkgr.nettyims.websocket.HttpInitializer;
-import com.semihbkgr.nettyims.websocket.HttpServerHandler;
-import com.semihbkgr.nettyims.websocket.WebSocketHandler;
 import com.semihbkgr.nettyims.zookeeper.ZKConnection;
 import com.semihbkgr.nettyims.zookeeper.ZKConnectionImpl;
 import com.semihbkgr.nettyims.zookeeper.ZKNodeManager;
@@ -182,13 +182,17 @@ public class NettyIMSApp {
 
         }
 
-        static class WebSocketInjectModules extends AbstractModule {
+        static class HttpInjectModules extends AbstractModule {
+
+            static final String SERVER_NODE_ID_NAMED = "serverNodeId";
 
             @Override
             protected void configure() {
                 bind(HttpInitializer.class).in(Singleton.class);
+                bind(String.class).annotatedWith(Names.named(SERVER_NODE_ID_NAMED))
+                        .toInstance(System.getProperty(EnvPropertyContracts.SERVER_NODE_ID_SYSTEM_PROPERTY));
                 bind(HttpServerHandler.class).in(Singleton.class);
-                bind(WebSocketHandler.class).in(Singleton.class);
+                bind(ChatWebSocketHandler.class).in(Singleton.class);
             }
 
         }
@@ -228,7 +232,7 @@ public class NettyIMSApp {
             static final String KAFKA_COMMON_MESSAGE_TOPIC_NAMED = "commonMessageTopic";
             static final String KAFKA_COMMON_MESSAGE_TOPIC = "common";
             static final String KAFKA_CONSUMER_GROUP_ID_NAMED = "kafkaConsumerGroupId";
-            static final String KAFKA_CONSUMER_GROUP_ID = "sender";
+            static final String KAFKA_CONSUMER_GROUP_ID_PREFIX = "sender";
 
             @Override
             protected void configure() {
@@ -240,7 +244,7 @@ public class NettyIMSApp {
                 bind(String.class).annotatedWith(Names.named(KAFKA_COMMON_MESSAGE_TOPIC_NAMED))
                         .toInstance(KAFKA_COMMON_MESSAGE_TOPIC);
                 bind(String.class).annotatedWith(Names.named(KAFKA_CONSUMER_GROUP_ID_NAMED))
-                        .toInstance(KAFKA_CONSUMER_GROUP_ID);
+                        .toInstance(KAFKA_CONSUMER_GROUP_ID_PREFIX + '-' + System.getProperty(EnvPropertyContracts.SERVER_NODE_ID_SYSTEM_PROPERTY));
                 bind(KafkaConsumerConnection.class).to(KafkaConsumerConnectionImpl.class).in(Singleton.class);
             }
 
@@ -249,7 +253,7 @@ public class NettyIMSApp {
         static Injector inject() {
             return Guice.createInjector(
                     new ZKInjectModule(),
-                    new WebSocketInjectModules(),
+                    new HttpInjectModules(),
                     new UserInjectModules(),
                     new MessageInjectModule(),
                     new KafkaInjectModules()

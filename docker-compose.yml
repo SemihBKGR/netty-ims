@@ -1,156 +1,216 @@
 version: '3'
 
 services:
-  zookeeper1:
+
+  zookeeper-1:
     image: zookeeper
-    hostname: zookeeper1
-    ports:
-      - "2181:2181"
+    hostname: zookeeper-1
+    container_name: zookeeper-1
     environment:
       ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+      ZOO_SERVERS: server.1=zookeeper-1:2888:3888;2181 server.2=zookeeper-2:2888:3888;2181 server.3=zookeeper-3:2888:3888;2181
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
-      - netty-ims
+      - default
 
-  zookeeper2:
+  zookeeper-2:
     image: zookeeper
-    hostname: zookeeper2
-    ports:
-      - "2182:2181"
+    hostname: zookeeper-2
+    container_name: zookeeper-2
     environment:
       ZOO_MY_ID: 2
-      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+      ZOO_SERVERS: server.1=zookeeper-1:2888:3888;2181 server.2=zookeeper-2:2888:3888;2181 server.3=zookeeper-3:2888:3888;2181
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
-      - netty-ims
+      - default
 
-  zookeeper3:
+  zookeeper-3:
     image: zookeeper
-    hostname: zookeeper3
-    ports:
-      - "2183:2181"
+    hostname: zookeeper-3
+    container_name: zookeeper-3
     environment:
       ZOO_MY_ID: 3
-      ZOO_SERVERS: server.1=zookeeper1:2888:3888;2181 server.2=zookeeper2:2888:3888;2181 server.3=zookeeper3:2888:3888;2181
+      ZOO_SERVERS: server.1=zookeeper-1:2888:3888;2181 server.2=zookeeper-2:2888:3888;2181 server.3=zookeeper-3:2888:3888;2181
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
-      - netty-ims
+      - default
 
-  kafka1:
+  kafka-1:
     image: confluentinc/cp-kafka:latest
-    hostname: kafka1
+    hostname: kafka-1
+    container_name: kafka-1
     depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    ports:
-      - "29092:29092"
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:29092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
     networks:
-      - netty-ims
+      - default
 
-  kafka2:
+  kafka-2:
     image: confluentinc/cp-kafka:latest
-    hostname: kafka2
+    hostname: kafka-2
+    container_name: kafka-2
     depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    ports:
-      - "29093:29093"
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 2
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:29093,PLAINTEXT_HOST://localhost:9093
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:29092,PLAINTEXT_HOST://localhost:9094
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
     networks:
-      - netty-ims
+      - default
 
-  kafka3:
+  kafka-3:
     image: confluentinc/cp-kafka:latest
-    hostname: kafka3
+    hostname: kafka-3
+    container_name: kafka-3
     depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    ports:
-      - "29094:29094"
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
     environment:
       KAFKA_BROKER_ID: 3
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:29094,PLAINTEXT_HOST://localhost:9094
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
     networks:
-      - netty-ims
+      - default
 
-  netty-ims1:
+  netty-ims-1:
     image: netty-ims:1.0.0
     build: .
+    hostname: netty-ims-1
+    container_name: netty-ims-1
     depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-      - kafka1
-      - kafka2
-      - kafka3
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
     environment:
       NETTY_IMS_PORT: 9000
-      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
-      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka1:29092,kafka2:29093,kafka3:29094
-    ports:
-      - "9000:9000"
+      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:29092,kafka-3:29092
+    expose:
+      - "9000/tcp"
     networks:
-      - netty-ims
+      - default
 
   netty-ims-2:
     image: netty-ims:1.0.0
     build: .
+    hostname: netty-ims-2
+    container_name: netty-ims-2
     depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-      - kafka1
-      - kafka2
-      - kafka3
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
     environment:
       NETTY_IMS_PORT: 9000
-      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
-      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka1:29092,kafka2:29093,kafka3:29094
-    ports:
-      - "9001:9000"
+      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:29092,kafka-3:29092
+    expose:
+      - "9000/tcp"
     networks:
-      - netty-ims
+      - default
 
   netty-ims-3:
     image: netty-ims:1.0.0
     build: .
+    hostname: netty-ims-3
+    container_name: netty-ims-3
     depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-      - kafka1
-      - kafka2
-      - kafka3
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
     environment:
       NETTY_IMS_PORT: 9000
-      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper1:2181,zookeeper2:2181,zookeeper3:2181
-      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka1:29092,kafka2:29093,kafka3:29094
-    ports:
-      - "9002:9000"
+      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:29092,kafka-3:29092
+    expose:
+      - "9000/tcp"
     networks:
-      - netty-ims
+      - default
+
+  netty-ims-4:
+    image: netty-ims:1.0.0
+    build: .
+    hostname: netty-ims-4
+    container_name: netty-ims-4
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    environment:
+      NETTY_IMS_PORT: 9000
+      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:29092,kafka-3:29092
+    expose:
+      - "9000/tcp"
+    networks:
+      - default
+
+  netty-ims-5:
+    image: netty-ims:1.0.0
+    build: .
+    hostname: netty-ims-5
+    container_name: netty-ims-5
+    depends_on:
+      - zookeeper-1
+      - zookeeper-2
+      - zookeeper-3
+      - kafka-1
+      - kafka-2
+      - kafka-3
+    environment:
+      NETTY_IMS_PORT: 9000
+      NETTY_IMS_ZK_CONNECTION_STRING: zookeeper-1:2181,zookeeper-2:2181,zookeeper-3:2181
+      NETTY_IMS_KAFKA_BOOTSTRAP_SERVERS: kafka-1:29092,kafka-2:29092,kafka-3:29092
+    expose:
+      - "9000/tcp"
+    networks:
+      - default
+
+  nginx:
+    image: nginx
+    hostname: nginx
+    container_name: nginx
+    depends_on:
+      - netty-ims-1
+      - netty-ims-2
+      - netty-ims-3
+      - netty-ims-4
+      - netty-ims-5
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8080:80"
+    networks:
+      - default
 
 networks:
-  netty-ims:
+  default:
     driver: bridge
