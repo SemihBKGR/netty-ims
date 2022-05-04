@@ -58,7 +58,9 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 serverStatusResponse.setAddress(ctx.channel().localAddress().toString());
                 var serializedServerStatusResponseBytes = objectMapper.writeValueAsBytes(serverStatusResponse);
                 var byteBuf = Unpooled.wrappedBuffer(serializedServerStatusResponseBytes);
-                ctx.channel().writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, byteBuf));
+                var httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, byteBuf);
+                httpResponse.headers().add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON);
+                ctx.channel().writeAndFlush(httpResponse);
             } else if (httpRequest.uri().equals(CHAT_WS_HANDSHAKE_URL)) {
                 HttpHeaders headers = httpRequest.headers();
                 // TODO: 5/3/22 HttpHeaderNames.CONNECTION: upgrade
@@ -76,7 +78,9 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                     errorResponse.setStatus(HttpResponseStatus.BAD_REQUEST.code());
                     var serializedErrorResponseBytes = objectMapper.writeValueAsBytes(errorResponse);
                     var byteBuf = Unpooled.wrappedBuffer(serializedErrorResponseBytes);
-                    ctx.channel().writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, byteBuf));
+                    var httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, byteBuf);
+                    httpResponse.headers().add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON);
+                    ctx.channel().writeAndFlush(httpResponse);
                 }
             } else {
                 var errorResponse = new ErrorResponse();
@@ -86,7 +90,9 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                 errorResponse.setStatus(HttpResponseStatus.BAD_REQUEST.code());
                 var serializedErrorResponseBytes = objectMapper.writeValueAsBytes(errorResponse);
                 var byteBuf = Unpooled.wrappedBuffer(serializedErrorResponseBytes);
-                ctx.channel().writeAndFlush(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, byteBuf));
+                var httpResponse = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST, byteBuf);
+                httpResponse.headers().add(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.APPLICATION_JSON);
+                ctx.channel().writeAndFlush(httpResponse);
             }
         } else {
             log.info("Incoming request type is not supported");
@@ -109,7 +115,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
         return "ws://" + req.headers().get("Host") + req.uri();
     }
 
-    private boolean containsHeader(HttpHeaders headers, CharSequence name, String value) {
+    private boolean containsHeader(@NonNull HttpHeaders headers, @NonNull CharSequence name, @NonNull String value) {
         return headers.getAllAsString(name)
                 .stream()
                 .anyMatch(h -> h.equalsIgnoreCase(value));
