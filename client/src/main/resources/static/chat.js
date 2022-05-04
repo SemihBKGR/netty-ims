@@ -1,35 +1,39 @@
-let socket = new WebSocket("ws://172.29.0.12:9000/chat");
+const nodeAddress = document.getElementById("server-node-address").innerText
+const wsUrlEndpoint = "/chat"
 
-socket.onopen = function(e) {
-    alert("[open] Connection established");
+let socket = new WebSocket(`ws://${nodeAddress}${wsUrlEndpoint}`);
+
+socket.onopen = function (_) {
+    console.log("Connection established");
 };
 
-socket.onmessage = function(event) {
-    console.log(event)
-    alert(`[message] Data received from server: ${event.data}`);
-};
-
-socket.onclose = function(event) {
+socket.onclose = function (event) {
     if (event.wasClean) {
-        alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+        console.log(`Connection closed cleanly, code=${event.code} reason=${event.reason}`);
     } else {
-        alert('[close] Connection died');
+        console.log('Connection died');
     }
 };
 
-socket.onerror = function (error) {
-    alert(`[error] ${error.message}`);
+socket.onerror = function (event) {
+    console.log(`Error ${event.message}`);
 };
 
-document.getElementById("message-send").onclick=function () {
-    let content = document.getElementById("message-content").textContent;
+socket.onmessage = function (event) {
+    console.log(`Data received from server: ${event.data}`);
+    document.getElementById("messages").innerText += event.data+"\n"
+};
+
+document.getElementById("send").onclick = function () {
+    let content = document.getElementById("content").value;
     let message = {
-        id: "1",
+        id: "",
         content: content,
-        from: "username",
+        from: "",
         toList: [],
-        timestamp: 1000000000
+        timestamp: 0
     };
-    socket.send(JSON.stringify(message))
-    alert(`message sent ${content}`)
+    let messageStr=JSON.stringify(message)
+    socket.send(messageStr)
+    console.log(`Message sent:  ${messageStr}`)
 }

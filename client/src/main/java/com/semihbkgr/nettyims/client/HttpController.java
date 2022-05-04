@@ -24,9 +24,4 @@ public class HttpController {
                 });
     }
 
-    @GetMapping("/**")
-    public Mono<String> redirect(){
-        return Mono.just("redirect:/chat");
-    }
-
 }

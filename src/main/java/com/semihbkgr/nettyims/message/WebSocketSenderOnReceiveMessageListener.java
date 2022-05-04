@@ -15,14 +15,14 @@ import java.util.function.BiConsumer;
 
 @Slf4j
 @Singleton
-public class WebSocketFrameSenderOnReceiveMessageListener implements BiConsumer<List<String>, Message> {
+public class WebSocketSenderOnReceiveMessageListener implements BiConsumer<List<String>, Message> {
 
     private final UserChannelContainer userChannelContainer;
     private final ObjectMapper objectMapper;
 
     @Inject
-    public WebSocketFrameSenderOnReceiveMessageListener(@NonNull UserChannelContainer userChannelContainer,
-                                                        @NonNull ObjectMapper objectMapper) {
+    public WebSocketSenderOnReceiveMessageListener(@NonNull UserChannelContainer userChannelContainer,
+                                                   @NonNull ObjectMapper objectMapper) {
         this.userChannelContainer = userChannelContainer;
         this.objectMapper = objectMapper;
     }
@@ -31,12 +31,11 @@ public class WebSocketFrameSenderOnReceiveMessageListener implements BiConsumer<
     @Override
     public void accept(@NonNull List<String> receiverUsernames, @NonNull Message message) {
         var serializedMessage = objectMapper.writeValueAsString(message);
-        var webSocketFrame = new TextWebSocketFrame(serializedMessage);
         if (receiverUsernames.isEmpty()) {
             log.info("message is sending all users, usersCount: {}, message: {}", userChannelContainer.size(), message);
             userChannelContainer.all()
                     .parallelStream()
-                    .forEach(c -> c.writeAndFlush(webSocketFrame));
+                    .forEach(c -> c.writeAndFlush(new TextWebSocketFrame(serializedMessage)));
         } else {
             receiverUsernames.parallelStream()
                     .map(username -> {
@@ -49,7 +48,7 @@ public class WebSocketFrameSenderOnReceiveMessageListener implements BiConsumer<
                         return channel;
                     })
                     .filter(Objects::nonNull)
-                    .forEach(c -> c.writeAndFlush(webSocketFrame));
+                    .forEach(c -> c.writeAndFlush(new TextWebSocketFrame(serializedMessage)));
         }
     }
 

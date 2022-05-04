@@ -7,7 +7,21 @@
 <body>
 <h1>NettyIMS</h1>
 <div>
+    <div>
+        <h5 id="server-node-id" th:text="'NodeID: '+${serverStatus.getNodeId()}"></h5>
+        <h5 id="server-node-users-count" th:text="'UsersCount '+(${serverStatus.getUsersCount()}+1)"></h5>
+        <h5 id="server-node-address" th:text="${serverStatus.getAddress()}"></h5>
+    </div>
+    <div>
+        <div id="messages">
+
+        </div>
+        <div>
+            <input id="content" type="text">
+            <button id="send">send</button>
+        </div>
+    </div>
 </div>
-<script type="text/javascript" src="./chat.js"></script>
+<script type="text/javascript" src="chat.js"></script>
 </body>
 </html>
