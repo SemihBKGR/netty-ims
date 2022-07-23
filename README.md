@@ -10,4 +10,5 @@ docker-compose up
 
 ## todo
 
-create diagram
+- create diagram
+- kubernetes deployment
