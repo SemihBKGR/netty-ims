@@ -6,3 +6,6 @@ spring:
 logging:
   level:
     root: info
+netty-ims:
+  proxy:
+    address: ${NETTY_IMS_PROXY_ADDRESS}

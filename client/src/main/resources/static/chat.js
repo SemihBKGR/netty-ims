@@ -1,7 +1,7 @@
-const nodeAddress = document.getElementById("server-node-address").innerText
-const wsUrlEndpoint = "/chat"
+const nodeAddress = document.getElementById("netty-ims-proxy-address").innerText
+const wsUrlEndpoint = "ws"
 
-let socket = new WebSocket(`ws://${nodeAddress}${wsUrlEndpoint}`);
+let socket = new WebSocket(`ws://${nodeAddress}/${wsUrlEndpoint}`);
 
 socket.onopen = function (_) {
     console.log("Connection established");

@@ -26,7 +26,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 
     public static final String USERNAME_CHANNEL_ATTR = "netty-ims-username";
     public static final String SERVER_STATUS_URL = "/status";
-    public static final String CHAT_WS_HANDSHAKE_URL = "/chat";
+    public static final String CHAT_WS_HANDSHAKE_URL = "/ws";
 
     private final String serverNodeId;
     private final UsernameGenerator usernameGenerator;

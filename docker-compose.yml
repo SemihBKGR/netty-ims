@@ -196,7 +196,7 @@ services:
 
   netty-ims-client-0:
     image: netty-ims-client:1.0.0
-    build: ./client/dockerfile
+    build: ./client/
     hostname: netty-ims-client-0
     container_name: netty-ims-client-0
     depends_on:
@@ -207,8 +207,7 @@ services:
       - netty-ims-4
     environment:
       SERVER_PORT: 9000
-      NETTY-IMS_GATEWAY_HOSTNAME: nginx
-      NETTY-IMS_GATEWAY_PORT: 80
+      NETTY_IMS_PROXY_ADDRESS: localhost:8080
     expose:
       - "9000/tcp"
     networks:
@@ -216,7 +215,7 @@ services:
 
   netty-ims-client-1:
     image: netty-ims-client:1.0.0
-    build: ./client/dockerfile
+    build: ./client/
     hostname: netty-ims-client-1
     container_name: netty-ims-client-1
     depends_on:
@@ -227,8 +226,7 @@ services:
       - netty-ims-4
     environment:
       SERVER_PORT: 9000
-      NETTY-IMS_GATEWAY_HOSTNAME: nginx
-      NETTY-IMS_GATEWAY_PORT: 80
+      NETTY_IMS_PROXY_ADDRESS: localhost:8080
     expose:
       - "9000/tcp"
     networks:
@@ -247,8 +245,7 @@ services:
       - netty-ims-4
     environment:
       SERVER_PORT: 9000
-      NETTY-IMS_GATEWAY_HOSTNAME: nginx
-      NETTY-IMS_GATEWAY_PORT: 80
+      NETTY_IMS_PROXY_ADDRESS: localhost:8080
     expose:
       - "9000/tcp"
     networks:

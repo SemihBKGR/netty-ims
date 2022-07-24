@@ -1,27 +1,21 @@
 package com.semihbkgr.nettyims.client;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import reactor.core.publisher.Mono;
 
-@Slf4j
-@RequiredArgsConstructor
 @Controller
 public class HttpController {
 
-    private final ServerStatusService serverStatusService;
+    @Value("${netty-ims.proxy.address}")
+    private String nettyIMSProxyAddress;
 
     @GetMapping("/chat")
     public Mono<String> chat(Model model) {
-        return serverStatusService.getStatus()
-                .map(serverStatusResponse -> {
-                    log.info("ServerStatus: {}", serverStatusResponse);
-                    model.addAttribute("serverStatus", serverStatusResponse);
-                    return "chat";
-                });
+        model.addAttribute("netty_ims_proxy_address", nettyIMSProxyAddress);
+        return Mono.just("chat");
     }
 
 }

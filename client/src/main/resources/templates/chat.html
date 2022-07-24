@@ -8,9 +8,7 @@
 <h1>NettyIMS</h1>
 <div>
     <div>
-        <h5 id="server-node-id" th:text="'NodeID: '+${serverStatus.getNodeId()}"></h5>
-        <h5 id="server-node-users-count" th:text="'UsersCount '+(${serverStatus.getUsersCount()}+1)"></h5>
-        <h5 id="server-node-address" th:text="${serverStatus.getAddress()}"></h5>
+        <h5 id="netty-ims-proxy-address" th:text="${netty_ims_proxy_address}"></h5>
     </div>
     <div>
         <div id="messages">
