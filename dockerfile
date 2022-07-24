@@ -1,6 +1,6 @@
 FROM gradle:7.4.1-jdk17-alpine AS build
-COPY ./. ./netty-ims
 WORKDIR ./netty-ims
+COPY ./. ./.
 RUN gradle test
 RUN gradle jar
 RUN mv ./build/libs/netty-ims-1.0.0.jar /

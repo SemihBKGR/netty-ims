@@ -6,6 +6,7 @@ import lombok.NonNull;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.List;
 
 public class HelpCommandProcessor extends MessagePublishCommandProcessor {
 
@@ -17,8 +18,13 @@ public class HelpCommandProcessor extends MessagePublishCommandProcessor {
     }
 
     @Override
-    protected String publish(@NonNull String command) {
-        return "help";
+    protected @NonNull String publish(@NonNull String username, @NonNull String command) {
+        return "/help /info /server /username [username]";
+    }
+
+    @Override
+    protected @NonNull List<String> toList(@NonNull String username) {
+        return List.of(username);
     }
 
 }

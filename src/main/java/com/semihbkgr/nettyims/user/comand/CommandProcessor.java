@@ -4,6 +4,6 @@ public interface CommandProcessor {
 
     boolean isCommand(String msg);
 
-    void process(String msg);
+    void process(String username, String msg);
 
 }

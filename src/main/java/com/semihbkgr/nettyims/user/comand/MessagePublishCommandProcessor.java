@@ -4,6 +4,9 @@ import com.semihbkgr.nettyims.message.Message;
 import com.semihbkgr.nettyims.message.MessageHandler;
 import lombok.NonNull;
 
+import javax.swing.plaf.ListUI;
+import java.util.List;
+
 public abstract class MessagePublishCommandProcessor extends PrefixCommandProcessor {
 
     private final String sender;
@@ -18,14 +21,19 @@ public abstract class MessagePublishCommandProcessor extends PrefixCommandProces
     }
 
     @Override
-    final void processCommand(@NonNull String command) {
-        var content = publish(command);
+    final void processCommand(@NonNull String username,@NonNull String command) {
+        var content = publish(username,command);
         var message = new Message();
         message.setContent(content);
         message.setFrom(sender);
+        message.setToList(toList(username));
         messageHandler.broadcastMessage(message);
     }
 
-    protected abstract String publish(@NonNull String command);
+    @NonNull
+    protected abstract String publish(@NonNull String username, @NonNull String command);
+
+    @NonNull
+    protected abstract List<String> toList(@NonNull String username);
 
 }
