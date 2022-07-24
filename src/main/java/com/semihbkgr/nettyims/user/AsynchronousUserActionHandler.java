@@ -1,6 +1,8 @@
 package com.semihbkgr.nettyims.user;
 
 import com.semihbkgr.nettyims.message.MessageHandler;
+import com.semihbkgr.nettyims.user.comand.CommandProcessor;
+import com.semihbkgr.nettyims.user.comand.CommandProcessorMultiplexer;
 import io.netty.channel.Channel;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -17,15 +19,18 @@ public class AsynchronousUserActionHandler implements UserActionHandler {
     private final UserChannelContainer userChannelContainer;
     private final UserNettyNodeInstanceService userNettyNodeInstanceService;
     private final MessageHandler messageHandler;
+    private final CommandProcessor commandProcessor;
     private final ThreadPoolExecutor threadPoolExecutor;
 
     @Inject
     public AsynchronousUserActionHandler(@NonNull UserChannelContainer userChannelContainer,
                                          @NonNull UserNettyNodeInstanceService userNettyNodeInstanceService,
-                                         @NonNull MessageHandler messageHandler) {
+                                         @NonNull MessageHandler messageHandler,
+                                         @NonNull CommandProcessorMultiplexer commandProcessorMultiplexer) {
         this.userChannelContainer = userChannelContainer;
         this.userNettyNodeInstanceService = userNettyNodeInstanceService;
         this.messageHandler = messageHandler;
+        this.commandProcessor=commandProcessorMultiplexer;
         this.threadPoolExecutor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
     }
 
@@ -46,7 +51,11 @@ public class AsynchronousUserActionHandler implements UserActionHandler {
     @Override
     public void onMessageSend(String username, String messageStr) {
         log.info("onMessageSend - username: {}, message: {}", username, messageStr);
-        threadPoolExecutor.execute(() -> messageHandler.broadcastMessage(username, messageStr));
+        if (commandProcessor.isCommand(messageStr)){
+            threadPoolExecutor.execute(() -> commandProcessor.process(messageStr));
+        }else {
+            threadPoolExecutor.execute(() -> messageHandler.broadcastMessage(username, messageStr));
+        }
     }
 
 }
