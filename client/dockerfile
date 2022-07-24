@@ -1,6 +1,7 @@
 FROM gradle:7.4.1-jdk17-alpine AS build
 COPY ./. ./netty-ims-client
 WORKDIR ./netty-ims-client
+RUN gradle test
 RUN gradle bootJar
 RUN mv ./build/libs/client-1.0.0.jar /
 

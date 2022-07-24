@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import reactor.core.publisher.Mono;
 
 @Controller
-public class HttpController {
+public class ChatController {
 
     @Value("${netty-ims.proxy.address}")
     private String nettyIMSProxyAddress;
