@@ -1,39 +1,51 @@
-const nodeAddress = document.getElementById("netty-ims-proxy-address").innerText
+const proxyAddress = nettyIMSProxyAddress
 const wsUrlEndpoint = "ws"
 
-let socket = new WebSocket(`ws://${nodeAddress}/${wsUrlEndpoint}`);
+class message{
+    constructor(id, content,from,toList,timestamp) {
+        this.id = id
+        this.content = content
+        this.from = from
+        this.toList = toList
+        this.timestamp = timestamp
+    }
+}
+
+let socket = new WebSocket(`ws://${proxyAddress}/${wsUrlEndpoint}`)
 
 socket.onopen = function (_) {
-    console.log("Connection established");
-};
+    console.log("Connection established")
+}
 
 socket.onclose = function (event) {
     if (event.wasClean) {
-        console.log(`Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+        console.log(`Connection closed cleanly, code=${event.code} reason=${event.reason}`)
     } else {
-        console.log('Connection died');
+        console.log('Connection died')
     }
-};
+}
 
 socket.onerror = function (event) {
-    console.log(`Error ${event.message}`);
-};
+    console.log(`Error ${event.message}`)
+}
 
 socket.onmessage = function (event) {
-    console.log(`Data received from server: ${event.data}`);
-    document.getElementById("messages").innerText += event.data+"\n"
-};
+    let msgStr = event.data
+    let msg=JSON.parse(msgStr)
+    console.log(`Message received: ${msgStr}`)
+    let time = timeConverter(msg.timestamp)
+    document.getElementById("messages").innerText += `${time} - ${msg.from} - ${msg.content}\n`
+}
 
 document.getElementById("send").onclick = function () {
-    let content = document.getElementById("content").value;
-    let message = {
-        id: "",
-        content: content,
-        from: "",
-        toList: [],
-        timestamp: 0
-    };
-    let messageStr=JSON.stringify(message)
-    socket.send(messageStr)
-    console.log(`Message sent:  ${messageStr}`)
+    let content = document.getElementById("content").value
+    let msg = new message("", content, "", [], 0)
+    let msgStr=JSON.stringify(msg)
+    socket.send(msgStr)
+    console.log(`Message sent:  ${msgStr}`)
+}
+
+function timeConverter(timestamp){
+    let date = new Date(timestamp);
+    return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() ;
 }

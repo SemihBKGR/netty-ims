@@ -60,11 +60,9 @@ public class KafkaMessageHandler implements MessageHandler {
     }
 
     @Override
-    public void broadcastMessage(@NonNull String from, @NonNull String messageStr) {
+    public void broadcastMessage(Message message) {
         try {
-            var message = objectMapper.readValue(messageStr, Message.class);
             message.setId(UUID.randomUUID().toString());
-            message.setFrom(from);
             message.setTimestamp(System.currentTimeMillis());
             var serializedMessage = objectMapper.writeValueAsString(message);
             if (message.getToList().isEmpty()) {
@@ -74,6 +72,17 @@ public class KafkaMessageHandler implements MessageHandler {
                         .parallelStream()
                         .forEach(usernamesServerNodeId -> kafkaProducerConnection.produce(usernamesServerNodeId.getKey(), usernamesServerNodeId.getValue(), serializedMessage));
             }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void broadcastMessage(@NonNull String from, @NonNull String messageStr) {
+        try {
+            var message = objectMapper.readValue(messageStr, Message.class);
+            message.setFrom(from);
+            broadcastMessage(message);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

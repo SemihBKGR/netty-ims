@@ -8,18 +8,21 @@
 <h1>NettyIMS</h1>
 <div>
     <div>
-        <h5 id="netty-ims-proxy-address" th:text="${netty_ims_proxy_address}"></h5>
-    </div>
-    <div>
         <div id="messages">
 
         </div>
         <div>
-            <input id="content" type="text">
+            <label for="content">Message: </label>
+            <input id="content" type="text" placeholder="/help">
             <button id="send">send</button>
         </div>
     </div>
 </div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const nettyIMSProxyAddress = [[${netty_ims_proxy_address}]];
+    /*]]>*/
+</script>
 <script type="text/javascript" src="chat.js"></script>
 </body>
 </html>

@@ -17,9 +17,7 @@ public class CommandProcessorMultiplexer implements CommandProcessor{
     @Override
     public boolean isCommand(@NonNull String msg) {
         return commandProcessorsSet.stream()
-                .map(commandProcessor -> commandProcessor.isCommand(msg))
-                .reduce((b1,b2)-> b1||b2)
-                .get();
+                .anyMatch(commandProcessor -> commandProcessor.isCommand(msg));
     }
 
     @Override
